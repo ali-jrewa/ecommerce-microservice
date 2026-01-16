@@ -1,6 +1,5 @@
 package com.allosh.ecommerce.kafka;
 
-import com.allosh.ecommerce.controller.OrderController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

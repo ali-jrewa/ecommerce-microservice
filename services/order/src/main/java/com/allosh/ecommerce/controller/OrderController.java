@@ -4,7 +4,6 @@ import com.allosh.ecommerce.order.OrderRequest;
 import com.allosh.ecommerce.order.OrderResponse;
 import com.allosh.ecommerce.service.OrderService;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.POST;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -13,7 +13,7 @@ import java.util.List;
 
 public record OrderRequest(
         Integer id,
-        String references,
+        String reference,
          @Positive(message = "Order amount should be positive")
          BigDecimal amount,
         @NotNull(message = "PaymentMethod should be precised")

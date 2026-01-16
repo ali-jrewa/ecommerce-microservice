@@ -1,8 +1,7 @@
 package com.allosh.ecommerce.handler;
 
 import com.allosh.ecommerce.exception.BusinessException;
-import com.example.ecommerce.exception.ProductPurchaseException;
-import com.example.ecommerce.product.ErrorResponse;
+
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +29,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException ex){
         var errors = new HashMap<String, String>();
         ex.getBindingResult().getAllErrors()
-                .forEach(error -> {
+                .forEach(
+                        error -> {
                     var fieldName =  ((FieldError) error).getField();
                     var errorMessage =  error.getDefaultMessage();
                     errors.put(fieldName,errorMessage);

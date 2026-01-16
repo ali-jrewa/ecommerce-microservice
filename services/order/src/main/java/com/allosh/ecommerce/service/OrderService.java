@@ -8,11 +8,14 @@ import com.allosh.ecommerce.mapper.OrderMapper;
 import com.allosh.ecommerce.order.OrderRequest;
 import com.allosh.ecommerce.order.OrderResponse;
 import com.allosh.ecommerce.orderline.OrderLineRequest;
+import com.allosh.ecommerce.payment.PaymentClient;
+import com.allosh.ecommerce.payment.PaymentRequest;
 import com.allosh.ecommerce.product.ProductClient;
 import com.allosh.ecommerce.product.PurchaseRequest;
 import com.allosh.ecommerce.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +23,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
     private final CustomerClient customerClient;
     private final ProductClient productClient;
+    private final PaymentClient paymentClient;
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
@@ -33,6 +38,7 @@ public class OrderService {
 
     public Integer createOrder(OrderRequest request){
         //check the customer --> openFeign
+        log.info("${application.config.customer-url}");
         var customer = customerClient.findCustomerById(request.customerId())
                 .orElseThrow(() -> new BusinessException("Cannot create order:: No Customer exists with the provided ID" +request.customerId()));
 
@@ -56,10 +62,19 @@ public class OrderService {
         }
 
         //start payment process
+        var paymentRequest = new PaymentRequest(
+                request.amount(),
+                request.paymentMethod(),
+                order.getId(),
+                order.getReference(),
+                customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
+
 
         //send the order confirmation --> notification-ms (kafka)]
         orderProducer.sendOrderConfirmation(new OrderConfirmation(
-                request.references(),
+                request.reference(),
                 request.amount(),
                 request.paymentMethod(),
                 customer,
